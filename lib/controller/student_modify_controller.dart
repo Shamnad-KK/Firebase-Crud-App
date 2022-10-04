@@ -7,6 +7,9 @@ import 'package:firebase_crud/utils/custom_image_picker.dart';
 import 'package:flutter/material.dart';
 
 class StudentModifyController extends ChangeNotifier {
+  StudentModifyController() {
+    fetchAllStudents();
+  }
   StudentModifyRepository studentRepository = StudentModifyRepository();
   TextEditingController nameController = TextEditingController();
   TextEditingController mobileContoller = TextEditingController();
@@ -23,6 +26,8 @@ class StudentModifyController extends ChangeNotifier {
 
   StudentModel? studentModel;
 
+  List<StudentModel>? studentList;
+
   void pickImage() async {
     image = await CustomImagePicker.pickImage();
     log("image picked");
@@ -38,7 +43,7 @@ class StudentModifyController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> saveStudentData() async {
+  Future<void> saveStudentData(BuildContext context) async {
     isLoading = true;
     if (image == null) {
       log("image is  null");
@@ -46,6 +51,7 @@ class StudentModifyController extends ChangeNotifier {
       log("studentmodel is  null");
     }
     await studentRepository.addStudent(
+      context,
       nameController.text,
       ageController.text,
       domainController.text,
@@ -53,6 +59,13 @@ class StudentModifyController extends ChangeNotifier {
       mobileContoller.text,
     );
 
+    isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> fetchAllStudents() async {
+    isLoading = true;
+    studentList = await studentRepository.fetchAllStudents();
     isLoading = false;
     notifyListeners();
   }

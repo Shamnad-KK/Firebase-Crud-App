@@ -1,11 +1,9 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:firebase_crud/controller/student_modify_controller.dart';
 import 'package:firebase_crud/helpers/app_padding.dart';
 import 'package:firebase_crud/helpers/app_spacings.dart';
 import 'package:firebase_crud/helpers/text_style.dart';
-import 'package:firebase_crud/repository/student_modify_repository.dart';
 import 'package:firebase_crud/view/home/widgets/custom_textfield.dart';
 import 'package:firebase_crud/widgets/custom_button_widget.dart';
 import 'package:flutter/material.dart';
@@ -18,10 +16,6 @@ class StudentModifyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final studentController =
         Provider.of<StudentModifyController>(context, listen: false);
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      // await StudentModifyRepository().fetchStudentsList();
-    });
     return Scaffold(
       appBar: AppBar(),
       body: SingleChildScrollView(
@@ -112,7 +106,7 @@ class StudentModifyScreen extends StatelessWidget {
                     ontap: () async {
                       studentController.setImageValidation();
                       if (studentController.formKey.currentState!.validate()) {
-                        await studentController.saveStudentData();
+                        await studentController.saveStudentData(context);
                       }
                     },
                   ),

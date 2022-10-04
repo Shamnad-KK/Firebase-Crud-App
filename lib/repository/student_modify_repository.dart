@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crud/model/student_model.dart';
 import 'package:firebase_crud/utils/app_popups.dart';
+import 'package:firebase_crud/view/home/home_screen.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
@@ -14,6 +15,7 @@ class StudentModifyRepository {
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseStorage storage = FirebaseStorage.instance;
   Future<StudentModel?> addStudent(
+    BuildContext context,
     String name,
     String age,
     String domain,
@@ -21,6 +23,7 @@ class StudentModifyRepository {
     String mobile,
   ) async {
     try {
+      final navContext = Navigator.of(context);
       StudentModel? studentModel;
       String uid = const Uuid().v4();
       String? photoUrl;
@@ -39,6 +42,7 @@ class StudentModifyRepository {
         domain: domain,
         profilePic: photoUrl!,
         mobile: mobile,
+        date: DateTime.now(),
         uid: uid,
       );
 
@@ -49,6 +53,11 @@ class StudentModifyRepository {
           .doc(uid)
           .set(studentModel.toMap());
       log("student model is not null");
+      await navContext.pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (ctx) => const HomeScreen(),
+          ),
+          (route) => false);
       return studentModel;
     } on FirebaseException catch (e) {
       AppPopUps().showToast(e.message!, Colors.red);
@@ -135,25 +144,58 @@ class StudentModifyRepository {
     }
     if (downloadUrl != null) {
       return downloadUrl;
+    } else {
+      return null;
     }
-    return null;
   }
 
-  Stream<List<StudentModel>> fetchAllStudents() {
-    return firestore
-        .collection("users")
-        .doc(auth.currentUser!.uid)
-        .collection("students")
-        .snapshots()
-        .asyncMap((event) async {
-      List<StudentModel> students = [];
-      for (var element in event.docs) {
-        final st = StudentModel.fromMap(element.data());
-        students.add(st);
+  Future<List<StudentModel>> fetchAllStudents() async {
+    List<StudentModel> studentList = [];
+    try {
+      final studentCollection = await firestore
+          .collection("users")
+          .doc(auth.currentUser!.uid)
+          .collection("students")
+          .orderBy("date")
+          .get();
+
+      List<QueryDocumentSnapshot<Map<String, dynamic>>> documentList =
+          studentCollection.docs;
+
+      for (var element in documentList) {
+        final studentData = StudentModel.fromMap(element.data());
+        studentList.insert(0, studentData);
+        // studentList.add(studentData);
       }
-      return students;
-    });
+      return studentList;
+    } on FirebaseException catch (e) {
+      AppPopUps().showToast(e.message!, Colors.red);
+    } catch (e) {
+      log(e.toString());
+    }
+
+    return studentList;
   }
+
+  // Future<StudentModel>updateStudentData()async{
+  //   await firestore.collection("users").
+  // }
+
+  // Stream<List<StudentModel>> fetchAllStudents() {
+  //   return firestore
+  //       .collection("users")
+  //       .doc(auth.currentUser!.uid)
+  //       .collection("students")
+  //       .snapshots()
+  //       .asyncMap((event) async {
+  //     List<StudentModel> students = [];
+  //     for (var element in event.docs) {
+  //       final st = StudentModel.fromMap(element.data());
+  //       students.add(st);
+  //     }
+  //     return students;
+  //   });
+  // }
 
 //Name validation
   String? nameValidation(String name) {
