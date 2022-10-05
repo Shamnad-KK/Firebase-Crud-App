@@ -43,6 +43,15 @@ class StudentModifyController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearData() {
+    nameController.clear();
+    mobileContoller.clear();
+    ageController.clear();
+    domainController.clear();
+    image = null;
+    notifyListeners();
+  }
+
   Future<void> saveStudentData(BuildContext context) async {
     isLoading = true;
     if (image == null) {
@@ -58,7 +67,22 @@ class StudentModifyController extends ChangeNotifier {
       image,
       mobileContoller.text,
     );
+    clearData();
+    isLoading = false;
+    notifyListeners();
+  }
 
+  Future<void> updateStudentData(String uid, BuildContext context) async {
+    isLoading = true;
+    await studentRepository.updateStudentData(
+        nameController.text,
+        ageController.text,
+        domainController.text,
+        image,
+        mobileContoller.text,
+        uid,
+        context);
+    clearData();
     isLoading = false;
     notifyListeners();
   }
@@ -67,6 +91,11 @@ class StudentModifyController extends ChangeNotifier {
     isLoading = true;
     studentList = await studentRepository.fetchAllStudents();
     isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> deleteStudent(String uid) async {
+    await studentRepository.deleteStudent(uid);
     notifyListeners();
   }
 

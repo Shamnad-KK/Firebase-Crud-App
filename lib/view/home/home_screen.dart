@@ -1,7 +1,6 @@
-import 'package:firebase_crud/controller/home_controller.dart';
+import 'package:firebase_crud/constants/enums.dart';
 import 'package:firebase_crud/controller/student_modify_controller.dart';
 import 'package:firebase_crud/helpers/app_spacings.dart';
-import 'package:firebase_crud/repository/student_modify_repository.dart';
 import 'package:firebase_crud/view/settings/settings_screen.dart';
 import 'package:firebase_crud/view/student_modify/student_modify_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -43,7 +42,9 @@ class HomeScreen extends StatelessWidget {
                     builder: (context, value, child) {
                   if (value.isLoading == true) {
                     return const Center(
-                      child: CupertinoActivityIndicator(),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 1.5,
+                      ),
                     );
                   } else if (value.studentList == null ||
                       value.studentList!.isEmpty) {
@@ -58,13 +59,35 @@ class HomeScreen extends StatelessWidget {
                           return Column(
                             children: [
                               AppSpacing.kHeight10,
-                              ListTile(
-                                leading: CircleAvatar(
-                                  radius: 30,
-                                  backgroundImage:
-                                      NetworkImage(student.profilePic),
+                              InkWell(
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (ctx) => StudentModifyScreen(
+                                      type: ScreenAction.editScreen,
+                                      student: student,
+                                    ),
+                                  ));
+                                },
+                                child: ListTile(
+                                  leading: CircleAvatar(
+                                    radius: 30,
+                                    backgroundImage:
+                                        NetworkImage(student.profilePic),
+                                  ),
+                                  title: Text(student.name),
+                                  subtitle: Text(student.domain),
+                                  trailing: IconButton(
+                                      onPressed: () async {
+                                        await studentController
+                                            .deleteStudent(student.uid);
+                                        // studentController.studentList!
+                                        //     .removeAt(index);
+                                      },
+                                      icon: const Icon(
+                                        Icons.delete,
+                                        color: Colors.red,
+                                      )),
                                 ),
-                                title: Text(student.name),
                               ),
                             ],
                           );
@@ -81,7 +104,9 @@ class HomeScreen extends StatelessWidget {
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (ctx) => const StudentModifyScreen(),
+              builder: (ctx) => const StudentModifyScreen(
+                type: ScreenAction.addScreen,
+              ),
             ),
           );
         },

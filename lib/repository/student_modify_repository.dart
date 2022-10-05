@@ -70,14 +70,16 @@ class StudentModifyRepository {
       File? image, String uid, String path) async {
     try {
       //CreateRefernce to path
-      Reference ref = storage.ref().child("$path/");
+      Reference ref =
+          storage.ref().child(auth.currentUser!.email!).child("$path/");
       //TaskSnapshot is used to put the data you want in storage
       //Make sure to get the image first before calling this method otherwise _image will be null.
 
       TaskSnapshot snapshot = await ref
           .child("students/")
-          .child("profilepic/")
           .child(uid)
+          .child("profilepic/")
+          .child("dp")
           .putFile(image!);
 
       if (snapshot.state == TaskState.running) {
@@ -129,10 +131,12 @@ class StudentModifyRepository {
       const String path = "images";
       downloadUrl = await storage
           .ref()
+          .child(auth.currentUser!.email!)
           .child("$path/")
           .child("students/")
-          .child("profilepic/")
           .child(uid)
+          .child("profilepic/")
+          .child("dp")
           .getDownloadURL();
 
       log(downloadUrl);
@@ -163,7 +167,7 @@ class StudentModifyRepository {
           studentCollection.docs;
 
       for (var element in documentList) {
-        final studentData = StudentModel.fromMap(element.data());
+        final StudentModel studentData = StudentModel.fromMap(element.data());
         studentList.insert(0, studentData);
         // studentList.add(studentData);
       }
@@ -177,25 +181,74 @@ class StudentModifyRepository {
     return studentList;
   }
 
-  // Future<StudentModel>updateStudentData()async{
-  //   await firestore.collection("users").
-  // }
+  Future<void> updateStudentData(
+    String name,
+    String age,
+    String domain,
+    File? image,
+    String mobile,
+    String uid,
+    BuildContext context,
+  ) async {
+    final navContext = Navigator.of(context);
+    StudentModel? studentModel;
+    const String path = "images";
+    String? photoUrl;
+    try {
+      if (image != null) {
+        await uploadStudentImage(image, uid, path);
+      }
+      photoUrl = await getStudentProfilePic(uid);
+      studentModel = StudentModel(
+        name: name,
+        age: age,
+        domain: domain,
+        profilePic: photoUrl!,
+        mobile: mobile,
+        date: DateTime.now(),
+        uid: uid,
+      );
+      await firestore
+          .collection("users")
+          .doc(auth.currentUser!.uid)
+          .collection("students")
+          .doc(uid)
+          .update(studentModel.toMap());
+      await navContext.pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (ctx) => const HomeScreen(),
+          ),
+          (route) => false);
+    } on FirebaseException catch (e) {
+      AppPopUps().showToast(e.message!, Colors.red);
+    } catch (e) {
+      AppPopUps().showToast(e.toString(), Colors.red);
+    }
+  }
 
-  // Stream<List<StudentModel>> fetchAllStudents() {
-  //   return firestore
-  //       .collection("users")
-  //       .doc(auth.currentUser!.uid)
-  //       .collection("students")
-  //       .snapshots()
-  //       .asyncMap((event) async {
-  //     List<StudentModel> students = [];
-  //     for (var element in event.docs) {
-  //       final st = StudentModel.fromMap(element.data());
-  //       students.add(st);
-  //     }
-  //     return students;
-  //   });
-  // }
+  Future<void> deleteStudent(String uid) async {
+    const String path = "images";
+    try {
+      Reference ref =
+          storage.ref().child(auth.currentUser!.email!).child("$path/");
+      await ref
+          .child("students/")
+          .child(uid)
+          .child("profilepic/")
+          .child("dp")
+          .delete();
+      await firestore
+          .collection("users")
+          .doc(auth.currentUser!.uid)
+          .collection("students")
+          .doc(uid)
+          .delete();
+    } on FirebaseException catch (e) {
+      AppPopUps().showToast(e.message!, Colors.red);
+    } catch (e) {
+      AppPopUps().showToast(e.toString(), Colors.red);
+    }
+  }
 
 //Name validation
   String? nameValidation(String name) {

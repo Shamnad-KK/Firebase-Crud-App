@@ -37,15 +37,13 @@ class SettingsRepository {
       if (image != null) {
         const String path = "images";
         //CreateRefernce to path
-        Reference ref = storage.ref().child("$path/");
+        Reference ref =
+            storage.ref().child(auth.currentUser!.email!).child("$path/");
 
         //StorageUpload task is used to put the data you want in storage
         //Make sure to get the image first before calling this method otherwise _image will be null.
 
-        UploadTask uploadTask = ref
-            .child("profilepic/")
-            .child("${auth.currentUser!.email}")
-            .putFile(image);
+        UploadTask uploadTask = ref.child("profilepic/").putFile(image);
 
         if (uploadTask.snapshot.state == TaskState.running) {
           uploadTask.snapshotEvents.listen((event) {
@@ -75,9 +73,9 @@ class SettingsRepository {
 
       downloadUrl = await storage
           .ref()
+          .child(auth.currentUser!.email!)
           .child("$path/")
           .child("profilepic/")
-          .child("${auth.currentUser!.email}")
           .getDownloadURL();
       log(downloadUrl);
     } on FirebaseException catch (e) {

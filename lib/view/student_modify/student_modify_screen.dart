@@ -1,21 +1,43 @@
 import 'dart:io';
 
+import 'package:firebase_crud/constants/enums.dart';
 import 'package:firebase_crud/controller/student_modify_controller.dart';
 import 'package:firebase_crud/helpers/app_padding.dart';
 import 'package:firebase_crud/helpers/app_spacings.dart';
 import 'package:firebase_crud/helpers/text_style.dart';
+import 'package:firebase_crud/model/student_model.dart';
 import 'package:firebase_crud/view/home/widgets/custom_textfield.dart';
 import 'package:firebase_crud/widgets/custom_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class StudentModifyScreen extends StatelessWidget {
-  const StudentModifyScreen({super.key});
+  const StudentModifyScreen({
+    super.key,
+    required this.type,
+    this.student,
+  });
+  final ScreenAction type;
+  final StudentModel? student;
 
   @override
   Widget build(BuildContext context) {
     final studentController =
         Provider.of<StudentModifyController>(context, listen: false);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (type == ScreenAction.editScreen) {
+        studentController.nameController.text = student!.name;
+        studentController.mobileContoller.text = student!.mobile;
+        studentController.ageController.text = student!.age;
+        studentController.domainController.text = student!.domain;
+      } else {
+        studentController.nameController.clear();
+        studentController.mobileContoller.clear();
+        studentController.ageController.clear();
+        studentController.domainController.clear();
+        studentController.image = null;
+      }
+    });
     return Scaffold(
       appBar: AppBar(),
       body: SingleChildScrollView(
@@ -32,17 +54,44 @@ class StudentModifyScreen extends StatelessWidget {
                     children: [
                       Consumer<StudentModifyController>(builder:
                           (BuildContext context, value, Widget? child) {
-                        return value.image == null
-                            ? const CircleAvatar(
-                                radius: 50,
-                                backgroundImage: NetworkImage(
-                                  "https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-High-Quality-Image.png",
-                                ))
-                            : CircleAvatar(
-                                radius: 50,
-                                backgroundImage:
-                                    FileImage(File(value.image!.path)),
-                              );
+                        return type == ScreenAction.editScreen
+                            ? Container(
+                                height: 90,
+                                width: 90,
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    image: DecorationImage(
+                                      image: NetworkImage(student!.profilePic),
+                                      fit: BoxFit.fill,
+                                      onError: (exception, stackTrace) {},
+                                    )),
+                              )
+                            : value.image == null
+                                ? Container(
+                                    height: 90,
+                                    width: 90,
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        image: DecorationImage(
+                                          image: const NetworkImage(
+                                            "https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-High-Quality-Image.png",
+                                          ),
+                                          fit: BoxFit.fill,
+                                          onError: (exception, stackTrace) {},
+                                        )),
+                                  )
+                                : Container(
+                                    height: 90,
+                                    width: 90,
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        image: DecorationImage(
+                                          image: FileImage(
+                                              File(value.image!.path)),
+                                          fit: BoxFit.fill,
+                                          onError: (exception, stackTrace) {},
+                                        )),
+                                  );
                       }),
                       Positioned(
                         bottom: -10,
@@ -106,7 +155,12 @@ class StudentModifyScreen extends StatelessWidget {
                     ontap: () async {
                       studentController.setImageValidation();
                       if (studentController.formKey.currentState!.validate()) {
-                        await studentController.saveStudentData(context);
+                        if (type == ScreenAction.addScreen) {
+                          await studentController.saveStudentData(context);
+                        } else {
+                          await studentController.updateStudentData(
+                              student!.uid, context);
+                        }
                       }
                     },
                   ),
