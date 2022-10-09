@@ -18,14 +18,17 @@ class LoginScreen extends StatelessWidget {
     final loginController =
         Provider.of<LoginController>(context, listen: false);
     return Scaffold(
-      appBar: const AppBarWidget(title: "Login"),
+      appBar: const AppBarWidget(title: ""),
       body: SafeArea(
         child: Padding(
           padding: AppPading.mainPading,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              AppSpacing.kHeight10,
+              const Image(
+                image: AssetImage(
+                  'assets/NoteThePoint-removebg-preview.png',
+                ),
+              ),
               CustomTextField(
                 controller: loginController.emailController,
                 hintText: 'Email',
@@ -47,7 +50,7 @@ class LoginScreen extends StatelessWidget {
               }),
               AppSpacing.kHeight40,
               CustomButtonWidget(
-                text: 'CONTINUE',
+                text: 'LOG IN',
                 ontap: () async {
                   await loginController.login(context);
                 },
@@ -69,7 +72,7 @@ class LoginScreen extends StatelessWidget {
                         );
                       },
                       child: const Text(
-                        'Register',
+                        'Sign up',
                         style: ApptextStyle.bodyNormalText,
                       )),
                 ],

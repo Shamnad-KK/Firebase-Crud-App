@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:firebase_crud/model/user_model.dart';
 import 'package:firebase_crud/repository/settings_repository.dart';
 import 'package:firebase_crud/utils/app_popups.dart';

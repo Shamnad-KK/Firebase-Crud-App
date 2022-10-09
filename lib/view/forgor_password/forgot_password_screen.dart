@@ -7,6 +7,7 @@ import 'package:firebase_crud/widgets/app_bar_widget.dart';
 import 'package:firebase_crud/widgets/custom_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
   const ForgotPasswordScreen({super.key});
@@ -37,13 +38,13 @@ class ForgotPasswordScreen extends StatelessWidget {
               Consumer<ForgotPasswordController>(
                 builder: (BuildContext context, value, Widget? child) {
                   return value.isLoading
-                      ? const Center(
+                      ? Center(
                           child: CircularProgressIndicator(
-                            strokeWidth: 2,
+                            strokeWidth: 2.w,
                           ),
                         )
                       : SizedBox(
-                          width: 200,
+                          width: 200.w,
                           child: CustomButtonWidget(
                             text: "CONFIRM",
                             ontap: () async {

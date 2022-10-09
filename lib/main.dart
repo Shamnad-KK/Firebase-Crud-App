@@ -10,6 +10,7 @@ import 'package:firebase_crud/firebase_options.dart';
 import 'package:firebase_crud/helpers/app_colors.dart';
 import 'package:firebase_crud/view/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -25,29 +26,37 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => SplashController()),
-        ChangeNotifierProvider(create: (context) => LoginController()),
-        ChangeNotifierProvider(create: (context) => RegisterController()),
-        ChangeNotifierProvider(create: (context) => HomeController()),
-        ChangeNotifierProvider(create: (context) => NoteModifyController()),
-        ChangeNotifierProvider(create: (context) => SettingsController()),
-        ChangeNotifierProvider(create: (context) => ForgotPasswordController()),
-      ],
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.indigo,
-          scaffoldBackgroundColor: AppColors.mainColor,
-          appBarTheme: const AppBarTheme(
-              iconTheme: IconThemeData(
-            color: Colors.black,
-          )),
-        ),
-        debugShowCheckedModeBanner: false,
-        home: const SplashScreen(),
-      ),
-    );
+    return ScreenUtilInit(
+        designSize: const Size(414, 896),
+        minTextAdapt: true,
+        splitScreenMode: true,
+        builder: (BuildContext context, Widget? child) {
+          return MultiProvider(
+            providers: [
+              ChangeNotifierProvider(create: (context) => SplashController()),
+              ChangeNotifierProvider(create: (context) => LoginController()),
+              ChangeNotifierProvider(create: (context) => RegisterController()),
+              ChangeNotifierProvider(create: (context) => HomeController()),
+              ChangeNotifierProvider(
+                  create: (context) => NoteModifyController()),
+              ChangeNotifierProvider(create: (context) => SettingsController()),
+              ChangeNotifierProvider(
+                  create: (context) => ForgotPasswordController()),
+            ],
+            child: MaterialApp(
+              title: 'Flutter Demo',
+              theme: ThemeData(
+                primarySwatch: Colors.indigo,
+                scaffoldBackgroundColor: AppColors.mainColor,
+                appBarTheme: const AppBarTheme(
+                    iconTheme: IconThemeData(
+                  color: Colors.black,
+                )),
+              ),
+              debugShowCheckedModeBanner: false,
+              home: const SplashScreen(),
+            ),
+          );
+        });
   }
 }

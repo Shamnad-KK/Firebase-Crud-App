@@ -2,19 +2,14 @@ import 'dart:developer';
 
 import 'package:firebase_crud/constants/enums.dart';
 import 'package:firebase_crud/controller/home_controller.dart';
-import 'package:firebase_crud/controller/note_modify_controller.dart';
 import 'package:firebase_crud/helpers/app_colors.dart';
-import 'package:firebase_crud/helpers/app_padding.dart';
-import 'package:firebase_crud/helpers/app_spacings.dart';
-import 'package:firebase_crud/helpers/text_style.dart';
-import 'package:firebase_crud/model/note_model.dart';
-import 'package:firebase_crud/utils/app_popups.dart';
 import 'package:firebase_crud/view/home/widgets/delete_icon_widget.dart';
 import 'package:firebase_crud/view/home/widgets/note_card_widget.dart';
-import 'package:firebase_crud/view/settings/settings_screen.dart';
 import 'package:firebase_crud/view/note_modify/note_modify_screen.dart';
+import 'package:firebase_crud/view/settings/settings_screen.dart';
 import 'package:firebase_crud/widgets/app_bar_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -69,12 +64,11 @@ class HomeScreen extends StatelessWidget {
                     child: GridView.builder(
                         padding: const EdgeInsets.all(5),
                         itemCount: value.noteList?.length,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
                           childAspectRatio: 1 / 1.2,
-                          crossAxisSpacing: 5,
-                          mainAxisSpacing: 5,
+                          crossAxisSpacing: 5.w,
+                          mainAxisSpacing: 5.h,
                         ),
                         itemBuilder: (context, index) {
                           final note = value.noteList![index];
@@ -109,8 +103,8 @@ class HomeScreen extends StatelessWidget {
                                 homeController.setDeleteOpacity(0);
                               },
                               feedback: SizedBox(
-                                height: 200,
-                                width: 200,
+                                height: 200.h,
+                                width: 200.w,
                                 child: Opacity(
                                   opacity: 0.7,
                                   child: Material(

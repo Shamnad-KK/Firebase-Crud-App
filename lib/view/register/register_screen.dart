@@ -18,7 +18,7 @@ class RegisterScreen extends StatelessWidget {
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: const AppBarWidget(title: 'Register'),
+      appBar: const AppBarWidget(title: ''),
       body: Padding(
         padding: AppPading.mainPading,
         child: Center(
@@ -76,9 +76,9 @@ class RegisterScreen extends StatelessWidget {
                     },
                   );
                 }),
-                AppSpacing.kHeight10,
+                AppSpacing.kHeight40,
                 CustomButtonWidget(
-                  text: 'CONTINUE',
+                  text: 'SIGN UP',
                   ontap: () async {
                     if (registerController.formKey.currentState!.validate()) {
                       await registerController.signUpUser(context);

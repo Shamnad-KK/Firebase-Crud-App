@@ -1,10 +1,11 @@
 import 'package:firebase_crud/controller/home_controller.dart';
-import 'package:firebase_crud/controller/note_modify_controller.dart';
 import 'package:firebase_crud/helpers/app_colors.dart';
+import 'package:firebase_crud/helpers/app_padding.dart';
 import 'package:firebase_crud/helpers/app_spacings.dart';
 import 'package:firebase_crud/helpers/text_style.dart';
 import 'package:firebase_crud/model/note_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class NoteCardWidget extends StatelessWidget {
   const NoteCardWidget({
@@ -19,11 +20,11 @@ class NoteCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(8),
-      padding: const EdgeInsets.all(8),
+      margin: AppPading.kPadding8,
+      padding: AppPading.kPadding8,
       decoration: BoxDecoration(
         color: AppColors.cardColors[note.colorId!],
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(10.r),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

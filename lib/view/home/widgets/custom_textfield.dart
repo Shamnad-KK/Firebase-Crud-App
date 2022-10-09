@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomTextField extends StatelessWidget {
   const CustomTextField({
@@ -33,11 +34,11 @@ class CustomTextField extends StatelessWidget {
         hintText: hintText,
         isDense: true,
         enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(width: 0.2),
-          borderRadius: BorderRadius.circular(30),
+          borderSide: BorderSide(width: 0.2.w),
+          borderRadius: BorderRadius.circular(30.r),
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.circular(30.r),
         ),
         suffixIcon: isPassword == true
             ? IconButton(

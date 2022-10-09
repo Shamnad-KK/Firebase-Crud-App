@@ -7,6 +7,7 @@ import 'package:firebase_crud/model/note_model.dart';
 import 'package:firebase_crud/widgets/app_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class NoteModifyScreen extends StatelessWidget {
   const NoteModifyScreen({
@@ -46,16 +47,12 @@ class NoteModifyScreen extends StatelessWidget {
                       hintText: 'Enter Note title ..'),
                   style: ApptextStyle.mainTitle,
                 ),
-                const SizedBox(
-                  height: 8,
-                ),
+                SizedBox(height: 8.h),
                 Text(
                   noteModifyController.date ?? "",
                   style: ApptextStyle.date,
                 ),
-                const SizedBox(
-                  height: 28,
-                ),
+                SizedBox(height: 28.h),
                 TextFormField(
                   controller: noteModifyController.contentController,
                   keyboardType: TextInputType.multiline,

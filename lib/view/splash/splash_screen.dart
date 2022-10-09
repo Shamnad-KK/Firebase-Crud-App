@@ -18,7 +18,7 @@ class SplashScreen extends StatelessWidget {
       backgroundColor: Color(0xFFF7F7F7),
       body: Center(
         child: Image(
-            image: AssetImage('assets/NoteAppNewLogo-removebg-preview.png')),
+            image: AssetImage('assets/NoteThePoint-removebg-preview.png')),
       ),
     );
   }

@@ -2,6 +2,8 @@ import 'package:firebase_crud/helpers/app_colors.dart';
 import 'package:firebase_crud/helpers/text_style.dart';
 import 'package:flutter/material.dart';
 
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   const AppBarWidget(
       {super.key,
@@ -26,5 +28,5 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size(double.infinity, 60);
+  Size get preferredSize => Size(double.infinity, 60.h);
 }

@@ -1,10 +1,10 @@
 import 'package:firebase_crud/controller/home_controller.dart';
-import 'package:firebase_crud/controller/note_modify_controller.dart';
 import 'package:firebase_crud/helpers/app_colors.dart';
 import 'package:firebase_crud/helpers/app_padding.dart';
 import 'package:firebase_crud/model/note_model.dart';
 import 'package:firebase_crud/utils/app_popups.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 class DeleteIconWidget extends StatelessWidget {
@@ -43,12 +43,12 @@ class DeleteIconWidget extends StatelessWidget {
           child: Padding(
             padding: AppPading.mainPading,
             child: CircleAvatar(
-              radius: 40,
+              radius: 40.r,
               backgroundColor: AppColors.cardColors[values.colorId ?? 0],
-              child: const Icon(
+              child: Icon(
                 Icons.delete,
                 color: Colors.red,
-                size: 35,
+                size: 35.h,
               ),
             ),
           ),

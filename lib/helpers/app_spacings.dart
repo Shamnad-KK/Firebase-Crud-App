@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 class AppSpacing {
-  static const SizedBox kHeight8 = SizedBox(height: 8);
-  static const SizedBox kHeight10 = SizedBox(height: 10);
-  static const SizedBox kHeight20 = SizedBox(height: 20);
-  static const SizedBox kHeight40 = SizedBox(height: 40);
+  static SizedBox kHeight8 = SizedBox(height: 8.h);
+  static SizedBox kHeight10 = SizedBox(height: 10.h);
+  static SizedBox kHeight20 = SizedBox(height: 20.h);
+  static SizedBox kHeight40 = SizedBox(height: 40.h);
 }
