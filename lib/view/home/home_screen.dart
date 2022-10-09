@@ -1,10 +1,16 @@
 import 'dart:developer';
 
 import 'package:firebase_crud/constants/enums.dart';
+import 'package:firebase_crud/controller/home_controller.dart';
 import 'package:firebase_crud/controller/note_modify_controller.dart';
 import 'package:firebase_crud/helpers/app_colors.dart';
+import 'package:firebase_crud/helpers/app_padding.dart';
 import 'package:firebase_crud/helpers/app_spacings.dart';
 import 'package:firebase_crud/helpers/text_style.dart';
+import 'package:firebase_crud/model/note_model.dart';
+import 'package:firebase_crud/utils/app_popups.dart';
+import 'package:firebase_crud/view/home/widgets/delete_icon_widget.dart';
+import 'package:firebase_crud/view/home/widgets/note_card_widget.dart';
 import 'package:firebase_crud/view/settings/settings_screen.dart';
 import 'package:firebase_crud/view/note_modify/note_modify_screen.dart';
 import 'package:firebase_crud/widgets/app_bar_widget.dart';
@@ -16,10 +22,9 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final noteController =
-        Provider.of<NoteModifyController>(context, listen: false);
+    final homeController = Provider.of<HomeController>(context, listen: false);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      await noteController.fetchAllNotes();
+      await homeController.fetchAllNotes();
     });
     return Scaffold(
       appBar: AppBarWidget(
@@ -41,8 +46,7 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           children: [
             Expanded(
-              child: Consumer<NoteModifyController>(
-                  builder: (context, value, child) {
+              child: Consumer<HomeController>(builder: (context, value, child) {
                 if (value.isLoading == true) {
                   return const Center(
                     child: CircularProgressIndicator(
@@ -75,92 +79,66 @@ class HomeScreen extends StatelessWidget {
                         itemBuilder: (context, index) {
                           final note = value.noteList![index];
                           log(note.uid);
-                          return InkWell(
+                          return GestureDetector(
+                            onLongPress: () {
+                              homeController.setDeleteOpacity(1);
+                              homeController.setDeleteColor(note.colorId);
+                            },
+                            onLongPressEnd: (details) {
+                              homeController.setDeleteOpacity(0);
+                            },
                             onTap: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (ctx) => StudentModifyScreen(
+                                  builder: (ctx) => NoteModifyScreen(
                                     type: ScreenAction.editScreen,
                                     note: note,
                                   ),
                                 ),
                               );
                             },
-                            child: Container(
-                              margin: const EdgeInsets.all(8),
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: AppColors.cardColors[note.colorId!],
-                                borderRadius: BorderRadius.circular(10),
+                            child: Draggable(
+                              maxSimultaneousDrags: 1,
+                              data: note,
+                              onDragStarted: () {
+                                value.deleteUid = note.uid;
+                                homeController.setDeleteColor(note.colorId);
+                                homeController.setDeleteOpacity(1);
+                              },
+                              onDraggableCanceled: (velocity, offset) {
+                                homeController.setDeleteOpacity(0);
+                              },
+                              feedback: SizedBox(
+                                height: 200,
+                                width: 200,
+                                child: Opacity(
+                                  opacity: 0.7,
+                                  child: Material(
+                                    child: NoteCardWidget(
+                                      note: note,
+                                      value: value,
+                                    ),
+                                  ),
+                                ),
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    note.title == "" ? "No title" : note.title!,
-                                    style: ApptextStyle.mainTitle,
-                                  ),
-                                  AppSpacing.kHeight8,
-                                  Text(
-                                    value.formatDate(note.date!),
-                                    style: ApptextStyle.date,
-                                  ),
-                                  AppSpacing.kHeight8,
-                                  Text(
-                                    note.noteContent == ""
-                                        ? "No content"
-                                        : note.noteContent!,
-                                    style: ApptextStyle.mainContent,
-                                  ),
-                                ],
+                              childWhenDragging: value.noteList!.length > 1
+                                  ? NoteCardWidget(
+                                      note: note,
+                                      value: value,
+                                    )
+                                  : const SizedBox(),
+                              child: NoteCardWidget(
+                                note: note,
+                                value: value,
                               ),
                             ),
                           );
                         }),
                   );
-                  // ListView.builder(
-                  //     itemCount: value.noteList!.length,
-                  //     itemBuilder: (context, index) {
-                  //       final student = value.noteList![index];
-                  //       return Column(
-                  //         children: [
-                  //           AppSpacing.kHeight10,
-                  //           InkWell(
-                  //             onTap: () {
-                  //               Navigator.of(context).push(MaterialPageRoute(
-                  //                 builder: (ctx) => StudentModifyScreen(
-                  //                   type: ScreenAction.editScreen,
-                  //                   student: student,
-                  //                 ),
-                  //               ));
-                  //             },
-                  //             child: ListTile(
-                  //               leading: CircleAvatar(
-                  //                 radius: 30,
-                  //                 backgroundImage:
-                  //                     NetworkImage(student.profilePic),
-                  //               ),
-                  //               title: Text(student.name),
-                  //               subtitle: Text(student.domain),
-                  //               trailing: IconButton(
-                  //                   onPressed: () async {
-                  //                     await studentController.deleteStudent(
-                  //                         student.uid, context);
-                  //                     // studentController.noteList!
-                  //                     //     .removeAt(index);
-                  //                   },
-                  //                   icon: const Icon(
-                  //                     Icons.delete,
-                  //                     color: Colors.red,
-                  //                   )),
-                  //             ),
-                  //           ),
-                  //         ],
-                  //       );
-                  //     });
                 }
               }),
             ),
+            const DeleteIconWidget()
           ],
         ),
       ),
@@ -174,7 +152,7 @@ class HomeScreen extends StatelessWidget {
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (ctx) => const StudentModifyScreen(
+              builder: (ctx) => const NoteModifyScreen(
                 type: ScreenAction.addScreen,
               ),
             ),

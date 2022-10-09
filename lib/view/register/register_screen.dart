@@ -15,92 +15,95 @@ class RegisterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final registerController =
         Provider.of<RegisterController>(context, listen: false);
-    final size = MediaQuery.of(context).size;
+
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: const AppBarWidget(title: 'Register'),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: AppPading.mainPading,
-          child: Center(
-            child: Form(
-              key: registerController.formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CustomTextField(
-                      controller: registerController.usernameController,
-                      validator: (value) {
-                        return registerController.userNameValidation();
-                      },
-                      hintText: 'Username'),
-                  AppSpacing.kHeight10,
-                  CustomTextField(
-                      controller: registerController.emailController,
-                      validator: (value) {
-                        return registerController.emailValidation();
-                      },
-                      hintText: 'Email'),
-                  AppSpacing.kHeight10,
-                  Consumer<RegisterController>(
-                      builder: (BuildContext context, value, Widget? child) {
-                    return CustomTextField(
-                      controller: registerController.passController,
-                      validator: (value) {
-                        return registerController.passwordValidation();
-                      },
-                      hintText: 'Password',
-                      isPassword: true,
-                      obscure: value.passObscure,
-                      suffixOntap: () {
-                        registerController.setPasswordObscure();
-                      },
-                    );
-                  }),
-                  AppSpacing.kHeight10,
-                  Consumer<RegisterController>(
-                      builder: (BuildContext context, value, Widget? child) {
-                    return CustomTextField(
-                      validator: (value) {
-                        return registerController.retypePasswordValidation();
-                      },
-                      controller: registerController.retypePassController,
-                      hintText: 'Confirm Password',
-                      isPassword: true,
-                      obscure: value.rePassObscure,
-                      suffixOntap: () {
-                        registerController.setRetypePasswordObscure();
-                      },
-                    );
-                  }),
-                  AppSpacing.kHeight10,
-                  CustomButtonWidget(
-                    text: 'CONTINUE',
-                    ontap: () async {
-                      if (registerController.formKey.currentState!.validate()) {
-                        await registerController.signUpUser(context);
-                      }
+      body: Padding(
+        padding: AppPading.mainPading,
+        child: Center(
+          child: Form(
+            key: registerController.formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CustomTextField(
+                    controller: registerController.usernameController,
+                    keyboardType: TextInputType.name,
+                    validator: (value) {
+                      return registerController.userNameValidation();
                     },
-                  ),
-                  AppSpacing.kHeight10,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Already have an account ?',
-                        style: ApptextStyle.bodyNormalText,
-                      ),
-                      TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text(
-                            'Log in',
-                            style: ApptextStyle.bodyNormalText,
-                          )),
-                    ],
-                  ),
-                ],
-              ),
+                    hintText: 'Username'),
+                AppSpacing.kHeight10,
+                CustomTextField(
+                    controller: registerController.emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) {
+                      return registerController.emailValidation();
+                    },
+                    hintText: 'Email'),
+                AppSpacing.kHeight10,
+                Consumer<RegisterController>(
+                    builder: (BuildContext context, value, Widget? child) {
+                  return CustomTextField(
+                    controller: registerController.passController,
+                    keyboardType: TextInputType.text,
+                    validator: (value) {
+                      return registerController.passwordValidation();
+                    },
+                    hintText: 'Password',
+                    isPassword: true,
+                    obscure: value.passObscure,
+                    suffixOntap: () {
+                      registerController.setPasswordObscure();
+                    },
+                  );
+                }),
+                AppSpacing.kHeight10,
+                Consumer<RegisterController>(
+                    builder: (BuildContext context, value, Widget? child) {
+                  return CustomTextField(
+                    validator: (value) {
+                      return registerController.retypePasswordValidation();
+                    },
+                    controller: registerController.retypePassController,
+                    keyboardType: TextInputType.text,
+                    hintText: 'Confirm Password',
+                    isPassword: true,
+                    obscure: value.rePassObscure,
+                    suffixOntap: () {
+                      registerController.setRetypePasswordObscure();
+                    },
+                  );
+                }),
+                AppSpacing.kHeight10,
+                CustomButtonWidget(
+                  text: 'CONTINUE',
+                  ontap: () async {
+                    if (registerController.formKey.currentState!.validate()) {
+                      await registerController.signUpUser(context);
+                    }
+                  },
+                ),
+                AppSpacing.kHeight10,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Already have an account ?',
+                      style: ApptextStyle.bodyNormalText,
+                    ),
+                    TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text(
+                          'Log in',
+                          style: ApptextStyle.bodyNormalText,
+                        )),
+                  ],
+                ),
+              ],
             ),
           ),
         ),

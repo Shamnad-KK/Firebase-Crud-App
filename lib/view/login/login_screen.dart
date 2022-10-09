@@ -1,8 +1,8 @@
 import 'package:firebase_crud/controller/login_controller.dart';
-import 'package:firebase_crud/helpers/app_colors.dart';
 import 'package:firebase_crud/helpers/app_padding.dart';
 import 'package:firebase_crud/helpers/app_spacings.dart';
 import 'package:firebase_crud/helpers/text_style.dart';
+import 'package:firebase_crud/view/forgor_password/forgot_password_screen.dart';
 import 'package:firebase_crud/view/home/widgets/custom_textfield.dart';
 import 'package:firebase_crud/view/register/register_screen.dart';
 import 'package:firebase_crud/widgets/app_bar_widget.dart';
@@ -27,14 +27,17 @@ class LoginScreen extends StatelessWidget {
             children: [
               AppSpacing.kHeight10,
               CustomTextField(
-                  controller: loginController.emailController,
-                  hintText: 'Email'),
+                controller: loginController.emailController,
+                hintText: 'Email',
+                keyboardType: TextInputType.emailAddress,
+              ),
               AppSpacing.kHeight10,
               Consumer<LoginController>(
                   builder: (BuildContext context, value, Widget? child) {
                 return CustomTextField(
                   controller: loginController.passController,
                   hintText: 'Password',
+                  keyboardType: TextInputType.text,
                   isPassword: true,
                   obscure: value.passObscure,
                   suffixOntap: () {
@@ -42,7 +45,7 @@ class LoginScreen extends StatelessWidget {
                   },
                 );
               }),
-              AppSpacing.kHeight10,
+              AppSpacing.kHeight40,
               CustomButtonWidget(
                 text: 'CONTINUE',
                 ontap: () async {
@@ -71,6 +74,16 @@ class LoginScreen extends StatelessWidget {
                       )),
                 ],
               ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (ctx) => const ForgotPasswordScreen(),
+                    ),
+                  );
+                },
+                child: const Text("Forgot Password?"),
+              )
             ],
           ),
         ),

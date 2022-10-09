@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 
 class ApptextStyle {
   static TextStyle mainTitle = const TextStyle(
-      fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black);
+      fontSize: 18,
+      fontWeight: FontWeight.bold,
+      color: Colors.black,
+      overflow: TextOverflow.ellipsis);
   static TextStyle mainContent = const TextStyle(
       fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black);
   static TextStyle date = const TextStyle(

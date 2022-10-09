@@ -3,44 +3,23 @@ import 'dart:io';
 import 'package:firebase_crud/model/user_model.dart';
 import 'package:firebase_crud/repository/settings_repository.dart';
 import 'package:firebase_crud/utils/app_popups.dart';
-import 'package:firebase_crud/utils/custom_image_picker.dart';
+import 'package:firebase_crud/view/home/home_screen.dart';
+import 'package:firebase_crud/view/settings/widgets/password_textfield_widget.dart';
 import 'package:flutter/material.dart';
 
 class SettingsController extends ChangeNotifier {
-  SettingsController() {
-    getUserProfilePic();
-  }
-  File? image;
-
   bool isLoading = false;
+
+  bool buttonLoading = false;
 
   UserModel? userModel;
 
-  double percentage = 0.0;
-
-  String? downloadUrl;
+  String? userName;
+  String? email;
 
   TextEditingController usernameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
-
-  void pickImage() async {
-    image = await CustomImagePicker.pickImage();
-    notifyListeners();
-  }
-
-  Future<void> uploadImage() async {
-    isLoading = true;
-    await SettingsRepository().uploadImage(image, percentage);
-    isLoading = false;
-    notifyListeners();
-  }
-
-  void getUserProfilePic() async {
-    isLoading = true;
-    downloadUrl = await SettingsRepository().getUserProfilePic();
-    isLoading = false;
-    notifyListeners();
-  }
+  TextEditingController passwordController = TextEditingController();
 
   Future<void> fetchUserData() async {
     isLoading = true;
@@ -51,16 +30,33 @@ class SettingsController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Future<void>updateUserData()async{
-  //   await SettingsRepository().updateUserData(emailController.text, p)
-  // }
+  void updateUserData(BuildContext context) async {
+    showDialog(
+        context: context,
+        builder: (ctx) {
+          final navContext = Navigator.of(context);
+          return PassWordTextFieldWidget(
+            onTap: () async {
+              buttonLoading = true;
+              notifyListeners();
+              await SettingsRepository().updateUserData(emailController.text,
+                  passwordController.text, usernameController.text, context);
+              buttonLoading = false;
+              notifyListeners();
+              await navContext.pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (ctx) => const HomeScreen()),
+                  (route) => false);
+            },
+          );
+        });
+    passwordController.clear();
+  }
 
   void signOut(BuildContext context) async {
     isLoading = true;
     AppPopUps().showAlertBox(context, "log out", ontap: () async {
       await SettingsRepository().signout(context);
       AppPopUps().showToast("logged out successfully", Colors.green);
-      image = null;
     });
     isLoading = false;
     notifyListeners();

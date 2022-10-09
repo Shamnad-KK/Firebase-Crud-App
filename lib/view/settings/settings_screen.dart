@@ -5,7 +5,9 @@ import 'package:firebase_crud/controller/settings_controller.dart';
 import 'package:firebase_crud/helpers/app_padding.dart';
 import 'package:firebase_crud/helpers/app_spacings.dart';
 import 'package:firebase_crud/helpers/text_style.dart';
+import 'package:firebase_crud/utils/app_popups.dart';
 import 'package:firebase_crud/view/home/widgets/custom_textfield.dart';
+import 'package:firebase_crud/widgets/app_bar_widget.dart';
 import 'package:firebase_crud/widgets/custom_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -21,101 +23,80 @@ class SettingsScreen extends StatelessWidget {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       log(settingsController.isLoading.toString());
       await settingsController.fetchUserData();
+      settingsController.userName = settingsController.usernameController.text;
+      settingsController.email = settingsController.emailController.text;
     });
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        title: const Text(
-          "Settings",
-          style: ApptextStyle.bodyHeadline,
-        ),
+      appBar: AppBarWidget(
+        title: "Settings",
         actions: [
           IconButton(
-              onPressed: () async {
-                settingsController.signOut(context);
-              },
-              icon: const Icon(Icons.logout))
+            onPressed: () async {
+              settingsController.signOut(context);
+            },
+            icon: const Icon(Icons.logout),
+          )
         ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: AppPading.mainPading,
-            child: Consumer<SettingsController>(
-                builder: (BuildContext context, value, Widget? child) {
-              return value.isLoading == true
-                  ? const Center(
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
+        child: Padding(
+          padding: AppPading.mainPading,
+          child: Consumer<SettingsController>(
+              builder: (BuildContext context, value, Widget? child) {
+            return value.isLoading == true
+                ? const Center(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                    ),
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CustomTextField(
+                        controller: settingsController.usernameController,
+                        hintText: 'Username',
+                        keyboardType: TextInputType.name,
                       ),
-                    )
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        AppSpacing.kHeight40,
-                        Stack(
-                          children: [
-                            value.image == null
-                                ? value.downloadUrl != null
-                                    ? CircleAvatar(
-                                        radius: 50,
-                                        backgroundImage: NetworkImage(
-                                          value.downloadUrl!,
-                                        ))
-                                    : const CircleAvatar(
-                                        radius: 50,
-                                        backgroundImage: NetworkImage(
-                                          "https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png",
-                                        ))
-                                : CircleAvatar(
-                                    radius: 50,
-                                    backgroundImage:
-                                        FileImage(File(value.image!.path)),
-                                  ),
-                            Positioned(
-                              bottom: -10,
-                              right: -10,
-                              child: IconButton(
-                                onPressed: () {
-                                  settingsController.pickImage();
+                      AppSpacing.kHeight10,
+                      CustomTextField(
+                        controller: settingsController.emailController,
+                        hintText: 'Email',
+                        keyboardType: TextInputType.emailAddress,
+                      ),
+                      AppSpacing.kHeight40,
+                      Consumer<SettingsController>(builder:
+                          (BuildContext context, value, Widget? child) {
+                        return value.buttonLoading == true
+                            ? const Center(
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : CustomButtonWidget(
+                                text: "SAVE",
+                                ontap: () async {
+                                  if (value.userName !=
+                                          value.usernameController.text ||
+                                      value.email !=
+                                          value.emailController.text) {
+                                    settingsController.updateUserData(context);
+                                  } else {
+                                    AppPopUps().showToast(
+                                        "Already up-to-date", Colors.green);
+                                  }
+
+                                  // if (settingsController.image != null &&
+                                  //     settingsController
+                                  //             .passwordController.text !=
+                                  //         "") {
+                                  //   await settingsController.uploadImage();
+                                  // }
                                 },
-                                icon: const Icon(Icons.camera_alt),
-                              ),
-                            )
-                          ],
-                        ),
-                        AppSpacing.kHeight10,
-                        AppSpacing.kHeight40,
-                        CustomTextField(
-                          controller: settingsController.usernameController,
-                          hintText: 'Username',
-                        ),
-                        AppSpacing.kHeight10,
-                        CustomTextField(
-                          controller: settingsController.emailController,
-                          hintText: 'Email',
-                          readOnly: true,
-                        ),
-                        AppSpacing.kHeight10,
-                        Consumer<SettingsController>(builder:
-                            (BuildContext context, value, Widget? child) {
-                          return value.isLoading
-                              ? const Center(
-                                  child: CircularProgressIndicator(),
-                                )
-                              : CustomButtonWidget(
-                                  text: "SAVE",
-                                  ontap: () async {
-                                    if (settingsController.image != null) {
-                                      await settingsController.uploadImage();
-                                    }
-                                  },
-                                );
-                        }),
-                      ],
-                    );
-            }),
-          ),
+                              );
+                      }),
+                    ],
+                  );
+          }),
         ),
       ),
     );

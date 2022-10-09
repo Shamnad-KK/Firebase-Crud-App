@@ -7,7 +7,7 @@ class AppColors {
 //Current colors
   static const Color backgroundColor = Color(0xFFFFFFFF);
   static const Color appBarColor = Colors.indigo;
-  static const Color customButtonColor = Colors.indigo;
+  static const Color customButtonColor = AppColors.mainColor;
 
   static List<Color> cardColors = [
     Colors.blue[100]!,

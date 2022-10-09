@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:developer';
 import 'dart:io';
 
@@ -30,79 +32,29 @@ class SettingsRepository {
     return userModel;
   }
 
-//This is a method for uploading image to firebase storage
-  Future<void> uploadImage(File? image, double? percentage) async {
+  Future<void> updateUserData(String email, String password, String userName,
+      BuildContext context) async {
     try {
-      if (image != null) {
-        const String path = "images";
-        //CreateRefernce to path
-        Reference ref =
-            storage.ref().child(auth.currentUser!.email!).child("$path/");
-
-        //StorageUpload task is used to put the data you want in storage
-        //Make sure to get the image first before calling this method otherwise _image will be null.
-
-        TaskSnapshot snapshot = await ref.child("profilepic/").putFile(image);
-
-        if (snapshot.state == TaskState.running) {
-          percentage = 100 *
-              snapshot.bytesTransferred.toDouble() /
-              snapshot.totalBytes.toDouble();
-
-          AppPopUps().showToast("${percentage.round()} %", Colors.green);
-          //Here you can get the download URL when the task has been completed.
-          log("THe percentage $percentage");
-        } else if (snapshot.state == TaskState.canceled) {
-          AppPopUps().showToast("Upload cancelled", Colors.red);
-        }
+      if (email != "") {
+        final credential = EmailAuthProvider.credential(
+            email: auth.currentUser!.email!, password: password);
+        await auth.currentUser!
+            .reauthenticateWithCredential(credential)
+            .then((value) async {
+          await auth.currentUser!.updateEmail(email);
+          await firestore
+              .collection("users")
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .update(
+            {
+              "userName": userName,
+              "email": email,
+              "uid": auth.currentUser!.uid,
+            },
+          );
+          AppPopUps().showToast("Updated successfully", Colors.green);
+        });
       }
-    } on FirebaseException catch (e) {
-      AppPopUps().showToast(e.message!, Colors.red);
-    } catch (e) {
-      AppPopUps().showToast(e.toString(), Colors.red);
-    }
-  }
-
-  Future<String?> getUserProfilePic() async {
-    String? downloadUrl;
-    try {
-      const String path = "images";
-
-      downloadUrl = await storage
-          .ref()
-          .child(auth.currentUser!.email!)
-          .child("$path/")
-          .child("profilepic/")
-          .getDownloadURL();
-      log(downloadUrl);
-      return downloadUrl;
-    } on FirebaseException catch (e) {
-      log(e.toString());
-      //  AppPopUps().showToast(e.message!, Colors.red);
-    } catch (e) {
-      log(e.toString());
-      //  AppPopUps().showToast(e.toString(), Colors.red);
-    }
-
-    return null;
-  }
-
-  Future<void> updateUserData(String email, String password) async {
-    try {
-      final credential = EmailAuthProvider.credential(
-          email: auth.currentUser!.email!, password: password);
-
-      await auth.currentUser!
-          .reauthenticateWithCredential(credential)
-          .then((value) async {
-        await auth.currentUser!.updateEmail(email);
-        await firestore
-            .collection("users")
-            .doc(FirebaseAuth.instance.currentUser!.uid)
-            .update(
-          {"email": email, "uid": auth.currentUser!.uid},
-        );
-      });
     } on FirebaseAuthException catch (e) {
       log(e.code);
       switch (e.code) {

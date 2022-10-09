@@ -10,6 +10,7 @@ class CustomTextField extends StatelessWidget {
     required this.controller,
     this.validator,
     this.readOnly = false,
+    required this.keyboardType,
   });
   final String hintText;
   final bool isPassword;
@@ -18,6 +19,7 @@ class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final String? Function(String?)? validator;
   final bool readOnly;
+  final TextInputType? keyboardType;
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +28,14 @@ class CustomTextField extends StatelessWidget {
       validator: validator,
       obscureText: obscure,
       readOnly: readOnly,
+      keyboardType: keyboardType,
       decoration: InputDecoration(
         hintText: hintText,
         isDense: true,
+        enabledBorder: OutlineInputBorder(
+          borderSide: const BorderSide(width: 0.2),
+          borderRadius: BorderRadius.circular(30),
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
         ),

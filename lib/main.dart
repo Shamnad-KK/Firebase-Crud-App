@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crud/controller/forgot_password_controller.dart';
 import 'package:firebase_crud/controller/home_controller.dart';
 import 'package:firebase_crud/controller/login_controller.dart';
 import 'package:firebase_crud/controller/register_controller.dart';
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => HomeController()),
         ChangeNotifierProvider(create: (context) => NoteModifyController()),
         ChangeNotifierProvider(create: (context) => SettingsController()),
+        ChangeNotifierProvider(create: (context) => ForgotPasswordController()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
