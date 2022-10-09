@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:firebase_crud/controller/settings_controller.dart';
@@ -18,6 +19,7 @@ class SettingsScreen extends StatelessWidget {
         Provider.of<SettingsController>(context, listen: false);
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      log(settingsController.isLoading.toString());
       await settingsController.fetchUserData();
     });
     return Scaffold(
@@ -95,25 +97,21 @@ class SettingsScreen extends StatelessWidget {
                           readOnly: true,
                         ),
                         AppSpacing.kHeight10,
-                        CustomButtonWidget(
-                          text: "SAVE",
-                          ontap: () async {
-                            if (settingsController.image != null) {
-                              settingsController.uploadImage();
-                            }
-                          },
-                        ),
-                        AppSpacing.kHeight10,
-                        Consumer<SettingsController>(
-                          builder:
-                              (BuildContext context, value, Widget? child) {
-                            return value.isLoading == true
-                                ? LinearProgressIndicator(
-                                    value: value.percentage,
-                                  )
-                                : const SizedBox();
-                          },
-                        )
+                        Consumer<SettingsController>(builder:
+                            (BuildContext context, value, Widget? child) {
+                          return value.isLoading
+                              ? const Center(
+                                  child: CircularProgressIndicator(),
+                                )
+                              : CustomButtonWidget(
+                                  text: "SAVE",
+                                  ontap: () async {
+                                    if (settingsController.image != null) {
+                                      await settingsController.uploadImage();
+                                    }
+                                  },
+                                );
+                        }),
                       ],
                     );
             }),

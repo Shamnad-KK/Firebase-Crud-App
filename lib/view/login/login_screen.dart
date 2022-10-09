@@ -1,4 +1,5 @@
 import 'package:firebase_crud/controller/login_controller.dart';
+import 'package:firebase_crud/helpers/app_colors.dart';
 import 'package:firebase_crud/helpers/app_padding.dart';
 import 'package:firebase_crud/helpers/app_spacings.dart';
 import 'package:firebase_crud/helpers/text_style.dart';
@@ -17,14 +18,13 @@ class LoginScreen extends StatelessWidget {
     final loginController =
         Provider.of<LoginController>(context, listen: false);
     return Scaffold(
-      appBar: const AppBarWidget(title: 'Login'),
+      appBar: const AppBarWidget(title: "Login"),
       body: SafeArea(
         child: Padding(
           padding: AppPading.mainPading,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('Log In', style: ApptextStyle.bodyHeadline),
               AppSpacing.kHeight10,
               CustomTextField(
                   controller: loginController.emailController,

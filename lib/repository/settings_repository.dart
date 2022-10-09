@@ -16,15 +16,14 @@ class SettingsRepository {
   Future<UserModel?> fetchUserData() async {
     UserModel? userModel;
     try {
-      await firestore
+      final data = await firestore
           .collection("users")
           .doc(FirebaseAuth.instance.currentUser!.uid)
-          .get()
-          .then((value) async {
-        userModel = UserModel.fromMap(value.data()!);
-        // await getUserProfilePic();
-      });
+          .get();
+      userModel = UserModel.fromMap(data.data()!);
       return userModel;
+    } on FirebaseException catch (e) {
+      AppPopUps().showToast(e.message!, Colors.red);
     } catch (e) {
       AppPopUps().showToast(e.toString(), Colors.red);
     }
@@ -43,19 +42,17 @@ class SettingsRepository {
         //StorageUpload task is used to put the data you want in storage
         //Make sure to get the image first before calling this method otherwise _image will be null.
 
-        UploadTask uploadTask = ref.child("profilepic/").putFile(image);
+        TaskSnapshot snapshot = await ref.child("profilepic/").putFile(image);
 
-        if (uploadTask.snapshot.state == TaskState.running) {
-          uploadTask.snapshotEvents.listen((event) {
-            percentage = 100 *
-                (event.bytesTransferred.toDouble() /
-                    event.totalBytes.toDouble());
+        if (snapshot.state == TaskState.running) {
+          percentage = 100 *
+              snapshot.bytesTransferred.toDouble() /
+              snapshot.totalBytes.toDouble();
 
-            AppPopUps().showToast("${percentage?.round()} %", Colors.green);
-            //Here you can get the download URL when the task has been completed.
-            log("THe percentage $percentage");
-          });
-        } else if (uploadTask.snapshot.state == TaskState.canceled) {
+          AppPopUps().showToast("${percentage.round()} %", Colors.green);
+          //Here you can get the download URL when the task has been completed.
+          log("THe percentage $percentage");
+        } else if (snapshot.state == TaskState.canceled) {
           AppPopUps().showToast("Upload cancelled", Colors.red);
         }
       }
@@ -78,15 +75,62 @@ class SettingsRepository {
           .child("profilepic/")
           .getDownloadURL();
       log(downloadUrl);
+      return downloadUrl;
     } on FirebaseException catch (e) {
-      AppPopUps().showToast(e.message!, Colors.red);
+      log(e.toString());
+      //  AppPopUps().showToast(e.message!, Colors.red);
+    } catch (e) {
+      log(e.toString());
+      //  AppPopUps().showToast(e.toString(), Colors.red);
+    }
+
+    return null;
+  }
+
+  Future<void> updateUserData(String email, String password) async {
+    try {
+      final credential = EmailAuthProvider.credential(
+          email: auth.currentUser!.email!, password: password);
+
+      await auth.currentUser!
+          .reauthenticateWithCredential(credential)
+          .then((value) async {
+        await auth.currentUser!.updateEmail(email);
+        await firestore
+            .collection("users")
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .update(
+          {"email": email, "uid": auth.currentUser!.uid},
+        );
+      });
+    } on FirebaseAuthException catch (e) {
+      log(e.code);
+      switch (e.code) {
+        case "invalid-email":
+          AppPopUps().showToast("E-mail is not valid", Colors.red);
+          break;
+        case "user-not-found":
+          AppPopUps()
+              .showToast("There is no user in this email address", Colors.red);
+          break;
+        case "wrong-password":
+          AppPopUps().showToast("Password is incorrect", Colors.red);
+          break;
+        case "unknown":
+          AppPopUps().showToast("Fields shouldn't be empty", Colors.red);
+          break;
+        case "weak-password":
+          AppPopUps().showToast(
+              "Password should have atleast 6 characters", Colors.red);
+          break;
+
+        default:
+          AppPopUps().showToast(e.message!, Colors.red);
+          break;
+      }
     } catch (e) {
       AppPopUps().showToast(e.toString(), Colors.red);
     }
-    if (downloadUrl != null) {
-      return downloadUrl;
-    }
-    return null;
   }
 
   Future<void> signout(BuildContext context) async {

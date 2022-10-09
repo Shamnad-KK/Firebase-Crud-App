@@ -9,14 +9,16 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final splashController =
         Provider.of<SplashController>(context, listen: false);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      splashController.checkUserState(context);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      await Future.delayed(const Duration(seconds: 2), () {
+        splashController.checkUserState(context);
+      });
     });
     return const Scaffold(
+      backgroundColor: Color(0xFFF7F7F7),
       body: Center(
-        child: CircularProgressIndicator(
-          strokeWidth: 2,
-        ),
+        child: Image(
+            image: AssetImage('assets/NoteAppNewLogo-removebg-preview.png')),
       ),
     );
   }

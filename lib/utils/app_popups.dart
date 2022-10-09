@@ -7,17 +7,16 @@ class AppPopUps {
     await Fluttertoast.showToast(msg: text, backgroundColor: color);
   }
 
-  void showDeleteAlertBox(
+  void showAlertBox(
     BuildContext context,
-    String title,
     String content, {
     required VoidCallback ontap,
   }) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text("Are you sure do you ?"),
-        content: const Text("Do you want to delete"),
+        title: const Text("Are you sure ?"),
+        content: Text("Do you want to $content"),
         actions: [
           TextButton(
             onPressed: () {

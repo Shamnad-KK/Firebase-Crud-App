@@ -15,6 +15,7 @@ class RegisterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final registerController =
         Provider.of<RegisterController>(context, listen: false);
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: const AppBarWidget(title: 'Register'),
       body: SingleChildScrollView(
@@ -26,44 +27,6 @@ class RegisterScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // AppSpacing.kHeight40,
-                  // Stack(
-                  //   children: [
-                  //     Consumer<RegisterController>(builder:
-                  //         (BuildContext context, value, Widget? child) {
-                  //       return value.image == null
-                  //           ? const CircleAvatar(
-                  //               radius: 50,
-                  //               backgroundImage: NetworkImage(
-                  //                 "https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-High-Quality-Image.png",
-                  //               ))
-                  //           : CircleAvatar(
-                  //               radius: 50,
-                  //               backgroundImage:
-                  //                   FileImage(File(value.image!.path)),
-                  //             );
-                  //     }),
-                  //     Positioned(
-                  //       bottom: -10,
-                  //       right: -10,
-                  //       child: IconButton(
-                  //         onPressed: () {
-                  //           registerController.pickImage();
-                  //         },
-                  //         icon: const Icon(Icons.camera_alt),
-                  //       ),
-                  //     )
-                  //   ],
-                  // ),
-                  // AppSpacing.kHeight10,
-                  // Visibility(
-                  //     visible:
-                  //         context.watch<RegisterController>().imageValidation,
-                  //     child: const Text(
-                  //       "Please add an image",
-                  //       style: ApptextStyle.imageValidationStyle,
-                  //     )),
-                  // AppSpacing.kHeight40,
                   CustomTextField(
                       controller: registerController.usernameController,
                       validator: (value) {

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crud/model/note_model.dart';
 import 'package:firebase_crud/model/student_model.dart';
 import 'package:firebase_crud/utils/app_popups.dart';
 import 'package:firebase_crud/view/home/home_screen.dart';
@@ -10,10 +11,77 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
-class StudentModifyRepository {
+class NoteModifyRepository {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseStorage storage = FirebaseStorage.instance;
+
+  Future<NoteModel?> addNote(NoteModel? modal, String uid) async {
+    NoteModel? noteModel;
+    try {
+      noteModel = NoteModel(
+        title: modal?.title,
+        date: modal?.date,
+        colorId: modal?.colorId,
+        noteContent: modal?.noteContent,
+        uid: uid,
+      );
+      await firestore
+          .collection("users")
+          .doc(auth.currentUser!.uid)
+          .collection("notes")
+          .doc(uid)
+          .set(noteModel.toMap());
+      return noteModel;
+    } on FirebaseException catch (e) {
+      AppPopUps().showToast(e.message!, Colors.red);
+    } catch (e) {
+      AppPopUps().showToast(e.toString(), Colors.red);
+    }
+    return null;
+  }
+
+  Future<List<NoteModel>?> fetchAllNotes() async {
+    List<NoteModel> notesList = [];
+    try {
+      final noteCollection = await firestore
+          .collection("users")
+          .doc(auth.currentUser!.uid)
+          .collection("notes")
+          .orderBy("creation_date")
+          .get();
+
+      List<QueryDocumentSnapshot<Map<String, dynamic>>> notes =
+          noteCollection.docs;
+
+      for (var element in notes) {
+        final NoteModel noteData = NoteModel.fromMap(element.data());
+        notesList.insert(0, noteData);
+      }
+      return notesList;
+    } on FirebaseException catch (e) {
+      AppPopUps().showToast(e.message!, Colors.red);
+    } catch (e) {
+      AppPopUps().showToast(e.toString(), Colors.red);
+    }
+    return null;
+  }
+
+  Future<void> updateNote(String uid, NoteModel noteModel) async {
+    try {
+      await firestore
+          .collection("users")
+          .doc(auth.currentUser!.uid)
+          .collection("notes")
+          .doc(uid)
+          .update(noteModel.toMap());
+    } on FirebaseException catch (e) {
+      AppPopUps().showToast(e.message!, Colors.red);
+    } catch (e) {
+      AppPopUps().showToast(e.toString(), Colors.red);
+    }
+  }
+
   Future<StudentModel?> addStudent(
     BuildContext context,
     String name,
@@ -23,7 +91,6 @@ class StudentModifyRepository {
     String mobile,
   ) async {
     try {
-      final navContext = Navigator.of(context);
       StudentModel? studentModel;
       String uid = const Uuid().v4();
       String? photoUrl;
@@ -32,33 +99,30 @@ class StudentModifyRepository {
       //Uploading image to firebase storage
       if (image != null) {
         await uploadStudentImage(image, uid, path);
+
+        //Getting the download url
+        photoUrl = await getStudentProfilePic(uid);
+
+        studentModel = StudentModel(
+          name: name,
+          age: age,
+          domain: domain,
+          profilePic: photoUrl!,
+          mobile: mobile,
+          date: DateTime.now(),
+          uid: uid,
+        );
+
+        await firestore
+            .collection("users")
+            .doc(auth.currentUser!.uid)
+            .collection("students")
+            .doc(uid)
+            .set(studentModel.toMap());
+        log("student model is not null");
+        AppPopUps().showToast("Added successfully", Colors.green);
+        return studentModel;
       }
-      //Getting the download url
-      photoUrl = await getStudentProfilePic(uid);
-
-      studentModel = StudentModel(
-        name: name,
-        age: age,
-        domain: domain,
-        profilePic: photoUrl!,
-        mobile: mobile,
-        date: DateTime.now(),
-        uid: uid,
-      );
-
-      await firestore
-          .collection("users")
-          .doc(auth.currentUser!.uid)
-          .collection("students")
-          .doc(uid)
-          .set(studentModel.toMap());
-      log("student model is not null");
-      await navContext.pushAndRemoveUntil(
-          MaterialPageRoute(
-            builder: (ctx) => const HomeScreen(),
-          ),
-          (route) => false);
-      return studentModel;
     } on FirebaseException catch (e) {
       AppPopUps().showToast(e.message!, Colors.red);
     }

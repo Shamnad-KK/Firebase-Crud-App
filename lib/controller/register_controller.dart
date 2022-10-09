@@ -1,4 +1,5 @@
 import 'package:firebase_crud/repository/register_repository.dart';
+import 'package:firebase_crud/utils/app_popups.dart';
 import 'package:flutter/material.dart';
 
 class RegisterController extends ChangeNotifier {
@@ -34,6 +35,7 @@ class RegisterController extends ChangeNotifier {
     emailController.clear();
     passController.clear();
     retypePassController.clear();
+    AppPopUps().showToast("Registered successfully", Colors.green);
     notifyListeners();
   }
 
