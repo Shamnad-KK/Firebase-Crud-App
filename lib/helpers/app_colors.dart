@@ -18,5 +18,6 @@ class AppColors {
     Colors.orange[100]!,
     Colors.purple[100]!,
     Colors.grey[400]!,
+    Colors.red[200]!,
   ];
 }

@@ -1,5 +1,8 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:firebase_crud/model/user_model.dart';
 import 'package:firebase_crud/repository/settings_repository.dart';
+import 'package:firebase_crud/utils/animated_page_transitions.dart';
 import 'package:firebase_crud/utils/app_popups.dart';
 import 'package:firebase_crud/view/home/home_screen.dart';
 import 'package:firebase_crud/view/settings/widgets/password_textfield_widget.dart';
@@ -32,7 +35,6 @@ class SettingsController extends ChangeNotifier {
     showDialog(
         context: context,
         builder: (ctx) {
-          final navContext = Navigator.of(context);
           return PassWordTextFieldWidget(
             onTap: () async {
               buttonLoading = true;
@@ -41,9 +43,8 @@ class SettingsController extends ChangeNotifier {
                   passwordController.text, usernameController.text, context);
               buttonLoading = false;
               notifyListeners();
-              await navContext.pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (ctx) => const HomeScreen()),
-                  (route) => false);
+              await AnimatedPageTransitions.scaleTransitionAndRemoveUntil(
+                  context, const HomeScreen());
             },
           );
         });
@@ -52,6 +53,7 @@ class SettingsController extends ChangeNotifier {
 
   void signOut(BuildContext context) async {
     isLoading = true;
+    notifyListeners();
     AppPopUps().showAlertBox(context, "log out", ontap: () async {
       await SettingsRepository().signout(context);
       AppPopUps().showToast("logged out successfully", Colors.green);

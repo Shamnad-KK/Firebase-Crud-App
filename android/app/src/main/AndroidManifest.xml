@@ -2,7 +2,7 @@
     package="com.example.firebase_crud">
     <uses-permission android:name="android.permission.INTERNET" />
    <application
-        android:label="firebase_crud"
+        android:label="Note The Point"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

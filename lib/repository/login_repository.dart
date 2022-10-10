@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crud/repository/register_repository.dart';
+import 'package:firebase_crud/utils/animated_page_transitions.dart';
 import 'package:firebase_crud/utils/app_popups.dart';
 import 'package:firebase_crud/view/home/home_screen.dart';
 import 'package:flutter/material.dart';
@@ -22,9 +23,8 @@ class LoginRepository {
         password: password,
       )
           .then((value) async {
-        await Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (ctx) => const HomeScreen()),
-            (route) => false);
+        await AnimatedPageTransitions.scaleTransitionAndRemoveUntil(
+            context, const HomeScreen());
       });
       if (!auth.currentUser!.emailVerified) {
         await RegisterRepository().sendEmailVerification();

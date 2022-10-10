@@ -22,16 +22,13 @@ class RegisterRepository {
       await auth
           .createUserWithEmailAndPassword(email: email, password: password)
           .then((value) async {
-        final navContext = Navigator.of(context);
         final userModel = UserModel(
           userName: username,
           email: email,
           uid: FirebaseAuth.instance.currentUser!.uid,
         );
         await saveUserData(userModel);
-        await navContext.pushAndRemoveUntil(
-            MaterialPageRoute(builder: (ctx) => const HomeScreen()),
-            (route) => false);
+
         await sendEmailVerification();
       });
     } on FirebaseAuthException catch (e) {
