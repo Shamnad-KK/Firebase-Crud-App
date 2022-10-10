@@ -3,12 +3,17 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crud/utils/app_popups.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class ForgotPasswordRepository {
   FirebaseAuth auth = FirebaseAuth.instance;
   Future<void> resetPassword(String email) async {
     try {
-      await auth.sendPasswordResetEmail(email: email);
+      await auth.sendPasswordResetEmail(email: email).then((value) =>
+          AppPopUps().showToast(
+              "A password reset link has been sent to your email",
+              Colors.green,
+              Toast.LENGTH_LONG));
     } on FirebaseAuthException catch (e) {
       log(e.code);
       switch (e.code) {

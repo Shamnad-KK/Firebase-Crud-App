@@ -24,8 +24,8 @@ class LoginController extends ChangeNotifier {
 
   Future<void> login(BuildContext context) async {
     setLoading(true);
-    await LoginRepository()
-        .loginWithEmail(context, emailController.text, passController.text);
+    await LoginRepository().loginWithEmail(
+        context, emailController.text.trim(), passController.text.trim());
     setLoading(false);
   }
 }

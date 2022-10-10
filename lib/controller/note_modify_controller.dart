@@ -19,9 +19,15 @@ class NoteModifyController extends ChangeNotifier {
 
   int colorId = Random().nextInt(AppColors.cardColors.length);
 
+  void shuffleColor() {
+    colorId = Random().nextInt(AppColors.cardColors.length);
+    notifyListeners();
+  }
+
   bool isLoading = false;
 
   String? date;
+
   void valueAssign(ScreenAction type, NoteModel? note) {
     if (type == ScreenAction.editScreen) {
       titleController?.text = note!.title!;
@@ -40,16 +46,17 @@ class NoteModifyController extends ChangeNotifier {
     String uid = const Uuid().v4();
 
     NoteModel? noteModel = NoteModel(
-      title: titleController?.text,
+      title: titleController?.text.trim(),
       date: DateTime.now(),
       colorId: colorId,
-      noteContent: contentController?.text,
+      noteContent: contentController?.text.trim(),
       uid: uid,
     );
 
     await noteModifyRepository.addNote(noteModel, uid);
     await HomeController().fetchAllNotes();
     isLoading = false;
+    colorId = Random().nextInt(AppColors.cardColors.length);
     notifyListeners();
     await navContext.pushAndRemoveUntil(
         MaterialPageRoute(
@@ -63,10 +70,10 @@ class NoteModifyController extends ChangeNotifier {
     final navContext = Navigator.of(context);
 
     final noteModel = NoteModel(
-        title: titleController?.text,
+        title: titleController?.text.trim(),
         date: DateTime.now(),
         colorId: currentColorId,
-        noteContent: contentController?.text,
+        noteContent: contentController?.text.trim(),
         uid: uid);
     await noteModifyRepository.updateNote(uid, noteModel);
     await HomeController().fetchAllNotes();

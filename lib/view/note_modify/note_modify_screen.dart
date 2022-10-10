@@ -23,6 +23,12 @@ class NoteModifyScreen extends StatelessWidget {
     final noteModifyController =
         Provider.of<NoteModifyController>(context, listen: false);
     noteModifyController.valueAssign(type, note);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (type == ScreenAction.addScreen) {
+        // noteModifyController.shuffleColor();
+      }
+    });
+
     return Scaffold(
       appBar: AppBarWidget(
         title: type == ScreenAction.addScreen ? "Add Note" : "Edit Note",
@@ -37,34 +43,43 @@ class NoteModifyScreen extends StatelessWidget {
         child: SafeArea(
           child: Padding(
             padding: AppPading.mainPading,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextFormField(
-                  controller: noteModifyController.titleController,
-                  decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Enter Note title ..'),
-                  style: ApptextStyle.mainTitle,
-                ),
-                SizedBox(height: 8.h),
-                Text(
-                  noteModifyController.date ?? "",
-                  style: ApptextStyle.date,
-                ),
-                SizedBox(height: 28.h),
-                TextFormField(
-                  controller: noteModifyController.contentController,
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'Note content',
-                  ),
-                  style: ApptextStyle.mainContent,
-                ),
-              ],
-            ),
+            child: Consumer<NoteModifyController>(
+                builder: (BuildContext context, value, Widget? child) {
+              return value.isLoading == true
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TextFormField(
+                          controller: noteModifyController.titleController,
+                          decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'Enter Note title ..'),
+                          style: ApptextStyle.mainTitle,
+                        ),
+                        SizedBox(height: 8.h),
+                        Text(
+                          noteModifyController.date ?? "",
+                          style: ApptextStyle.date,
+                        ),
+                        SizedBox(height: 28.h),
+                        TextFormField(
+                          controller: noteModifyController.contentController,
+                          keyboardType: TextInputType.multiline,
+                          maxLines: null,
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Note content',
+                          ),
+                          style: ApptextStyle.mainContent,
+                        ),
+                      ],
+                    );
+            }),
           ),
         ),
       ),

@@ -1,12 +1,17 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crud/model/user_model.dart';
+import 'package:firebase_crud/repository/register_repository.dart';
+import 'package:firebase_crud/utils/animated_page_transitions.dart';
 import 'package:firebase_crud/utils/app_popups.dart';
 import 'package:firebase_crud/view/login/login_screen.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class SettingsRepository {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -33,30 +38,41 @@ class SettingsRepository {
       BuildContext context) async {
     try {
       if (email != "") {
-        final credential = EmailAuthProvider.credential(
-            email: auth.currentUser!.email!, password: password);
-        await auth.currentUser!
-            .reauthenticateWithCredential(credential)
-            .then((value) async {
-          await auth.currentUser!.updateEmail(email);
-          await firestore
-              .collection("users")
-              .doc(FirebaseAuth.instance.currentUser!.uid)
-              .update(
-            {
-              "userName": userName,
-              "email": email,
-              "uid": auth.currentUser!.uid,
-            },
-          );
-          AppPopUps().showToast("Updated successfully", Colors.green);
-        });
+        if (!auth.currentUser!.emailVerified) {
+          AppPopUps().showToast(
+              "Please verify your account before changing the data",
+              Colors.red,
+              Toast.LENGTH_LONG);
+          await RegisterRepository().sendEmailVerification();
+        } else {
+          final credential = EmailAuthProvider.credential(
+              email: auth.currentUser!.email!, password: password);
+          await auth.currentUser!
+              .reauthenticateWithCredential(credential)
+              .then((value) async {
+            await auth.currentUser!.updateEmail(email);
+            await firestore
+                .collection("users")
+                .doc(FirebaseAuth.instance.currentUser!.uid)
+                .update(
+              {
+                "userName": userName,
+                "email": email,
+                "uid": auth.currentUser!.uid,
+              },
+            );
+            AppPopUps().showToast("Updated successfully", Colors.green);
+          });
+        }
       }
     } on FirebaseAuthException catch (e) {
       log(e.code);
       switch (e.code) {
         case "invalid-email":
           AppPopUps().showToast("E-mail is not valid", Colors.red);
+          break;
+        case "network-request-failed":
+          AppPopUps().showToast("Network error", Colors.red);
           break;
         case "user-not-found":
           AppPopUps()
@@ -83,10 +99,17 @@ class SettingsRepository {
   }
 
   Future<void> signout(BuildContext context) async {
-    final navContext = Navigator.of(context);
-    await auth.signOut();
-    await navContext.pushAndRemoveUntil(
-        MaterialPageRoute(builder: (ctx) => const LoginScreen()),
-        (route) => false);
+    try {
+      await auth.signOut();
+      AppPopUps().showToast("Signed out", Colors.green);
+      await AnimatedPageTransitions.scaleTransitionAndRemoveUntil(
+          context, const LoginScreen());
+    } on FirebaseAuthException catch (e) {
+      if (e.code == "network-request-failed") {
+        AppPopUps().showToast(e.toString(), Colors.red);
+      }
+    } catch (e) {
+      AppPopUps().showToast(e.toString(), Colors.red);
+    }
   }
 }

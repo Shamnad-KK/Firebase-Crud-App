@@ -24,6 +24,7 @@ class SettingsController extends ChangeNotifier {
 
   Future<void> fetchUserData() async {
     isLoading = true;
+    notifyListeners();
     userModel = await SettingsRepository().fetchUserData();
     usernameController.text = userModel?.userName ?? "";
     emailController.text = userModel?.email ?? "";
@@ -39,8 +40,11 @@ class SettingsController extends ChangeNotifier {
             onTap: () async {
               buttonLoading = true;
               notifyListeners();
-              await SettingsRepository().updateUserData(emailController.text,
-                  passwordController.text, usernameController.text, context);
+              await SettingsRepository().updateUserData(
+                  emailController.text.trim(),
+                  passwordController.text.trim(),
+                  usernameController.text.trim(),
+                  context);
               buttonLoading = false;
               notifyListeners();
               await AnimatedPageTransitions.scaleTransitionAndRemoveUntil(

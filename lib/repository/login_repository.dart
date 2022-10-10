@@ -35,6 +35,9 @@ class LoginRepository {
         case "invalid-email":
           AppPopUps().showToast("E-mail is not valid", Colors.red);
           break;
+        case "network-request-failed":
+          AppPopUps().showToast("Network error", Colors.red);
+          break;
         case "user-not-found":
           AppPopUps()
               .showToast("There is no user in this email address", Colors.red);
@@ -54,6 +57,8 @@ class LoginRepository {
           AppPopUps().showToast(e.message!, Colors.red);
           break;
       }
+    } on FirebaseException catch (e) {
+      AppPopUps().showToast(e.message!, Colors.red);
     }
   }
 }

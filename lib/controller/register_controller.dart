@@ -20,9 +20,9 @@ class RegisterController extends ChangeNotifier {
     final navContext = Navigator.of(context);
     await registerRepository.signUpWithEmail(
       context,
-      emailController.text,
-      usernameController.text,
-      passController.text,
+      emailController.text.trim(),
+      usernameController.text.trim(),
+      passController.text.trim(),
     );
     setLoading(false);
 

@@ -4,8 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crud/model/user_model.dart';
 import 'package:firebase_crud/utils/app_popups.dart';
-import 'package:firebase_crud/view/home/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class RegisterRepository {
   final FirebaseAuth auth = FirebaseAuth.instance;
@@ -37,7 +37,9 @@ class RegisterRepository {
         case "invalid-email":
           AppPopUps().showToast("E-mail is not valid", Colors.red);
           break;
-
+        case "network-request-failed":
+          AppPopUps().showToast("Network error", Colors.red);
+          break;
         case "weak-password":
           AppPopUps().showToast(
               "Password should have atleast 6 characters", Colors.red);
@@ -62,7 +64,8 @@ class RegisterRepository {
           .sendEmailVerification()
           .then((value) =>
               AppPopUps().showToast("Email verification send", Colors.green))
-          .catchError((c) => AppPopUps().showToast(c.toString(), Colors.green));
+          .catchError((c) => AppPopUps()
+              .showToast(c.toString(), Colors.green, Toast.LENGTH_LONG));
     } on FirebaseAuthException catch (e) {
       AppPopUps().showToast(e.message!, Colors.green);
     }
