@@ -1,6 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.firebase_crud">
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission
+     android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+     android:maxSdkVersion="18" />
    <application
         android:label="Note The Point"
         android:name="${applicationName}"

@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crud/model/user_model.dart';
 import 'package:firebase_crud/utils/app_popups.dart';
+import 'package:firebase_crud/view/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -22,6 +23,7 @@ class RegisterRepository {
       await auth
           .createUserWithEmailAndPassword(email: email, password: password)
           .then((value) async {
+        final navContext = Navigator.of(context);
         final userModel = UserModel(
           userName: username,
           email: email,
@@ -30,6 +32,11 @@ class RegisterRepository {
         await saveUserData(userModel);
 
         await sendEmailVerification();
+
+        await navContext.pushAndRemoveUntil(
+            MaterialPageRoute(builder: (ctx) => const HomeScreen()),
+            (route) => false);
+        AppPopUps().showToast("Registered successfully", Colors.green);
       });
     } on FirebaseAuthException catch (e) {
       log(e.toString());
@@ -45,12 +52,17 @@ class RegisterRepository {
               "Password should have atleast 6 characters", Colors.red);
           break;
         case "email-already-in-use":
-          AppPopUps().showToast(
-              "There is already an account in this email", Colors.red);
+          AppPopUps().showToast("Email already exists", Colors.red);
           break;
         default:
           AppPopUps().showToast(e.message!, Colors.red);
           break;
+      }
+    } on FirebaseException catch (e) {
+      if (e.code == "too-many-requests") {
+        AppPopUps().showToast("Please try again after some time", Colors.red);
+      } else {
+        AppPopUps().showToast(e.message!, Colors.red);
       }
     } catch (e) {
       log(e.toString());
@@ -62,12 +74,18 @@ class RegisterRepository {
     try {
       await auth.currentUser!
           .sendEmailVerification()
-          .then((value) =>
-              AppPopUps().showToast("Email verification send", Colors.green))
+          .then((value) => AppPopUps()
+              .showToast("verification email has been sent", Colors.green))
           .catchError((c) => AppPopUps()
               .showToast(c.toString(), Colors.green, Toast.LENGTH_LONG));
     } on FirebaseAuthException catch (e) {
       AppPopUps().showToast(e.message!, Colors.green);
+    } on FirebaseException catch (e) {
+      if (e.code == "too-many-requests") {
+        AppPopUps().showToast("Please try again after some time", Colors.red);
+      } else {
+        AppPopUps().showToast(e.message!, Colors.red);
+      }
     }
   }
 
@@ -79,7 +97,11 @@ class RegisterRepository {
           .doc(auth.currentUser!.uid)
           .set(userModel.toMap());
     } on FirebaseException catch (e) {
-      AppPopUps().showToast(e.message!, Colors.red);
+      if (e.code == "too-many-requests") {
+        AppPopUps().showToast("Please try again after some time", Colors.red);
+      } else {
+        AppPopUps().showToast(e.message!, Colors.red);
+      }
     }
   }
 

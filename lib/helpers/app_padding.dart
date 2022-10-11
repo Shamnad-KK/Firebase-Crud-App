@@ -15,4 +15,10 @@ class AppPading {
     top: 8.h,
     bottom: 8.h,
   );
+  static EdgeInsets kPadding5 = EdgeInsets.only(
+    left: 8.w,
+    right: 8.w,
+    top: 8.h,
+    bottom: 8.h,
+  );
 }

@@ -76,7 +76,7 @@ class LoginScreen extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       'New user ?',
                       style: ApptextStyle.bodyNormalText,
                     ),
@@ -85,7 +85,7 @@ class LoginScreen extends StatelessWidget {
                           await AnimatedPageTransitions.slideTransition(
                               context, const RegisterScreen());
                         },
-                        child: const Text(
+                        child: Text(
                           'Sign up',
                           style: ApptextStyle.bodyNormalText,
                         )),

@@ -3,8 +3,7 @@ import 'dart:developer';
 import 'package:firebase_crud/constants/enums.dart';
 import 'package:firebase_crud/controller/home_controller.dart';
 import 'package:firebase_crud/helpers/app_colors.dart';
-import 'package:firebase_crud/helpers/app_spacings.dart';
-import 'package:firebase_crud/helpers/text_style.dart';
+import 'package:firebase_crud/helpers/app_padding.dart';
 import 'package:firebase_crud/utils/animated_page_transitions.dart';
 import 'package:firebase_crud/view/home/widgets/delete_icon_widget.dart';
 import 'package:firebase_crud/view/home/widgets/note_card_widget.dart';
@@ -33,9 +32,9 @@ class HomeScreen extends StatelessWidget {
               await AnimatedPageTransitions.slideTransition(
                   context, const SettingsScreen());
             },
-            icon: const Icon(
-              Icons.settings,
-              size: 26,
+            icon: Icon(
+              Icons.account_circle,
+              size: 32.h,
             ),
           )
         ],
@@ -62,12 +61,12 @@ class HomeScreen extends StatelessWidget {
                 );
               } else {
                 return Padding(
-                  padding: const EdgeInsets.all(5),
+                  padding: AppPading.kPadding5,
                   child: Column(
                     children: [
                       Expanded(
                         child: GridView.builder(
-                            padding: const EdgeInsets.all(5),
+                            padding: AppPading.kPadding5,
                             itemCount: value.noteList?.length,
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(

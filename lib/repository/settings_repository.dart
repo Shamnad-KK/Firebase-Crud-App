@@ -5,13 +5,11 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crud/model/user_model.dart';
-import 'package:firebase_crud/repository/register_repository.dart';
 import 'package:firebase_crud/utils/animated_page_transitions.dart';
 import 'package:firebase_crud/utils/app_popups.dart';
 import 'package:firebase_crud/view/login/login_screen.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class SettingsRepository {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -27,7 +25,11 @@ class SettingsRepository {
       userModel = UserModel.fromMap(data.data()!);
       return userModel;
     } on FirebaseException catch (e) {
-      AppPopUps().showToast(e.message!, Colors.red);
+      if (e.code == "too-many-requests") {
+        AppPopUps().showToast("Please try again after some time", Colors.red);
+      } else {
+        AppPopUps().showToast(e.message!, Colors.red);
+      }
     } catch (e) {
       AppPopUps().showToast(e.toString(), Colors.red);
     }
@@ -38,32 +40,32 @@ class SettingsRepository {
       BuildContext context) async {
     try {
       if (email != "") {
-        if (!auth.currentUser!.emailVerified) {
-          AppPopUps().showToast(
-              "Please verify your account before changing the data",
-              Colors.red,
-              Toast.LENGTH_LONG);
-          await RegisterRepository().sendEmailVerification();
-        } else {
-          final credential = EmailAuthProvider.credential(
-              email: auth.currentUser!.email!, password: password);
-          await auth.currentUser!
-              .reauthenticateWithCredential(credential)
-              .then((value) async {
-            await auth.currentUser!.updateEmail(email);
-            await firestore
-                .collection("users")
-                .doc(FirebaseAuth.instance.currentUser!.uid)
-                .update(
-              {
-                "userName": userName,
-                "email": email,
-                "uid": auth.currentUser!.uid,
-              },
-            );
-            AppPopUps().showToast("Updated successfully", Colors.green);
-          });
-        }
+        // if (!auth.currentUser!.emailVerified) {
+        //   AppPopUps().showToast(
+        //       "Please verify your account before changing the data",
+        //       Colors.red,
+        //       Toast.LENGTH_LONG);
+        //   await RegisterRepository().sendEmailVerification();
+        // } else {
+        final credential = EmailAuthProvider.credential(
+            email: auth.currentUser!.email!, password: password);
+        await auth.currentUser!
+            .reauthenticateWithCredential(credential)
+            .then((value) async {
+          await auth.currentUser!.updateEmail(email);
+          await firestore
+              .collection("users")
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .update(
+            {
+              "userName": userName,
+              "email": email,
+              "uid": auth.currentUser!.uid,
+            },
+          );
+          AppPopUps().showToast("Updated successfully", Colors.green);
+        });
+        // }
       }
     } on FirebaseAuthException catch (e) {
       log(e.code);
@@ -93,6 +95,12 @@ class SettingsRepository {
           AppPopUps().showToast(e.message!, Colors.red);
           break;
       }
+    } on FirebaseException catch (e) {
+      if (e.code == "too-many-requests") {
+        AppPopUps().showToast("Please try again after some time", Colors.red);
+      } else {
+        AppPopUps().showToast(e.message!, Colors.red);
+      }
     } catch (e) {
       AppPopUps().showToast(e.toString(), Colors.red);
     }
@@ -107,6 +115,12 @@ class SettingsRepository {
     } on FirebaseAuthException catch (e) {
       if (e.code == "network-request-failed") {
         AppPopUps().showToast(e.toString(), Colors.red);
+      }
+    } on FirebaseException catch (e) {
+      if (e.code == "too-many-requests") {
+        AppPopUps().showToast("Please try again after some time", Colors.red);
+      } else {
+        AppPopUps().showToast(e.message!, Colors.red);
       }
     } catch (e) {
       AppPopUps().showToast(e.toString(), Colors.red);

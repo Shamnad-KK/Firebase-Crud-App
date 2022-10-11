@@ -58,7 +58,11 @@ class LoginRepository {
           break;
       }
     } on FirebaseException catch (e) {
-      AppPopUps().showToast(e.message!, Colors.red);
+      if (e.code == "too-many-requests") {
+        AppPopUps().showToast("Please try again after some time", Colors.red);
+      } else {
+        AppPopUps().showToast(e.message!, Colors.red);
+      }
     }
   }
 }

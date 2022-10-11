@@ -28,7 +28,11 @@ class NoteModifyRepository {
           .set(noteModel.toMap());
       return noteModel;
     } on FirebaseException catch (e) {
-      AppPopUps().showToast(e.message!, Colors.red);
+      if (e.code == "too-many-requests") {
+        AppPopUps().showToast("Please try again after some time", Colors.red);
+      } else {
+        AppPopUps().showToast(e.message!, Colors.red);
+      }
     } catch (e) {
       AppPopUps().showToast(e.toString(), Colors.red);
     }
@@ -44,7 +48,11 @@ class NoteModifyRepository {
           .doc(uid)
           .update(noteModel.toMap());
     } on FirebaseException catch (e) {
-      AppPopUps().showToast(e.message!, Colors.red);
+      if (e.code == "too-many-requests") {
+        AppPopUps().showToast("Please try again after some time", Colors.red);
+      } else {
+        AppPopUps().showToast(e.message!, Colors.red);
+      }
     } catch (e) {
       AppPopUps().showToast(e.toString(), Colors.red);
     }

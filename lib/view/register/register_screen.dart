@@ -15,9 +15,11 @@ class RegisterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final registerController =
         Provider.of<RegisterController>(context, listen: false);
+
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       registerController.setLoading(false);
     });
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: const AppBarWidget(title: ''),
@@ -106,7 +108,7 @@ class RegisterScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
+                      Text(
                         'Already have an account ?',
                         style: ApptextStyle.bodyNormalText,
                       ),
@@ -114,7 +116,7 @@ class RegisterScreen extends StatelessWidget {
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
-                          child: const Text(
+                          child: Text(
                             'Log in',
                             style: ApptextStyle.bodyNormalText,
                           )),

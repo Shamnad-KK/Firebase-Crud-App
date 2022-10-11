@@ -11,23 +11,32 @@ class PassWordTextFieldWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final settingsController =
         Provider.of<SettingsController>(context, listen: false);
-    return AlertDialog(
-      title: const Text('Please confirm your password'),
-      content: CustomTextField(
-        hintText: "Password",
-        controller: settingsController.passwordController,
-        keyboardType: TextInputType.text,
-      ),
-      actions: [
-        TextButton.icon(
-          onPressed: () {
-            Navigator.of(context).pop();
-            onTap();
+    return Form(
+      key: settingsController.formKey,
+      child: AlertDialog(
+        title: const Text('Please confirm your password'),
+        content: CustomTextField(
+          hintText: "Password",
+          controller: settingsController.passwordController,
+          keyboardType: TextInputType.text,
+          validator: (p0) {
+            return settingsController.passwordValidation(p0);
           },
-          icon: const Icon(Icons.done),
-          label: const Text("Confirm"),
-        )
-      ],
+        ),
+        actions: [
+          TextButton.icon(
+            onPressed: () {
+              if (settingsController.formKey.currentState!.validate()) {
+                Navigator.of(context).pop();
+
+                onTap();
+              }
+            },
+            icon: const Icon(Icons.done),
+            label: const Text("Confirm"),
+          )
+        ],
+      ),
     );
     // return CustomTextField(
     //   hintText: "Password",

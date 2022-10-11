@@ -1,6 +1,4 @@
 import 'package:firebase_crud/repository/register_repository.dart';
-import 'package:firebase_crud/utils/app_popups.dart';
-import 'package:firebase_crud/view/home/home_screen.dart';
 import 'package:flutter/material.dart';
 
 class RegisterController extends ChangeNotifier {
@@ -17,7 +15,7 @@ class RegisterController extends ChangeNotifier {
 
   Future<void> signUpUser(BuildContext context) async {
     setLoading(true);
-    final navContext = Navigator.of(context);
+
     await registerRepository.signUpWithEmail(
       context,
       emailController.text.trim(),
@@ -26,14 +24,11 @@ class RegisterController extends ChangeNotifier {
     );
     setLoading(false);
 
-    await navContext.pushAndRemoveUntil(
-        MaterialPageRoute(builder: (ctx) => const HomeScreen()),
-        (route) => false);
     usernameController.clear();
     emailController.clear();
     passController.clear();
     retypePassController.clear();
-    AppPopUps().showToast("Registered successfully", Colors.green);
+
     notifyListeners();
   }
 

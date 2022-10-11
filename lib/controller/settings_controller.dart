@@ -18,6 +18,8 @@ class SettingsController extends ChangeNotifier {
   String? userName;
   String? email;
 
+  final formKey = GlobalKey<FormState>();
+
   TextEditingController usernameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -53,6 +55,13 @@ class SettingsController extends ChangeNotifier {
           );
         });
     passwordController.clear();
+  }
+
+  String? passwordValidation(String? value) {
+    if (value == null || value.isEmpty) {
+      return "Please enter password";
+    }
+    return null;
   }
 
   void signOut(BuildContext context) async {

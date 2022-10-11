@@ -27,7 +27,7 @@ class SettingsScreen extends StatelessWidget {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBarWidget(
-        title: "Settings",
+        title: "",
         actions: [
           IconButton(
             onPressed: () async {
@@ -43,6 +43,7 @@ class SettingsScreen extends StatelessWidget {
           child: Padding(
             padding: AppPading.mainPading,
             child: Column(
+              verticalDirection: VerticalDirection.down,
               children: [
                 Consumer<SettingsController>(
                     builder: (BuildContext context, value, Widget? child) {
@@ -53,48 +54,58 @@ class SettingsScreen extends StatelessWidget {
                           ),
                         )
                       : Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Image(
-                              image: AssetImage(
-                                'assets/NoteThePoint-removebg-preview.png',
-                              ),
+                            Column(
+                              children: [
+                                const Image(
+                                  image: AssetImage(
+                                    'assets/NoteThePoint-removebg-preview.png',
+                                  ),
+                                ),
+                                CustomTextField(
+                                  controller:
+                                      settingsController.usernameController,
+                                  hintText: 'Username',
+                                  keyboardType: TextInputType.name,
+                                ),
+                                AppSpacing.kHeight10,
+                                CustomTextField(
+                                  controller:
+                                      settingsController.emailController,
+                                  hintText: 'Email',
+                                  keyboardType: TextInputType.emailAddress,
+                                ),
+                                AppSpacing.kHeight40,
+                                Consumer<SettingsController>(builder:
+                                    (BuildContext context, value,
+                                        Widget? child) {
+                                  return value.buttonLoading == true
+                                      ? const Center(
+                                          child: CircularProgressIndicator(
+                                              strokeWidth: 2),
+                                        )
+                                      : CustomButtonWidget(
+                                          text: "SAVE",
+                                          ontap: () async {
+                                            if (value.userName !=
+                                                    value.usernameController
+                                                        .text ||
+                                                value.email !=
+                                                    value
+                                                        .emailController.text) {
+                                              settingsController
+                                                  .updateUserData(context);
+                                            } else {
+                                              AppPopUps().showToast(
+                                                  "Already up-to-date",
+                                                  Colors.green);
+                                            }
+                                          },
+                                        );
+                                }),
+                              ],
                             ),
-                            CustomTextField(
-                              controller: settingsController.usernameController,
-                              hintText: 'Username',
-                              keyboardType: TextInputType.name,
-                            ),
-                            AppSpacing.kHeight10,
-                            CustomTextField(
-                              controller: settingsController.emailController,
-                              hintText: 'Email',
-                              keyboardType: TextInputType.emailAddress,
-                            ),
-                            AppSpacing.kHeight40,
-                            Consumer<SettingsController>(builder:
-                                (BuildContext context, value, Widget? child) {
-                              return value.buttonLoading == true
-                                  ? const Center(
-                                      child: CircularProgressIndicator(
-                                          strokeWidth: 2),
-                                    )
-                                  : CustomButtonWidget(
-                                      text: "SAVE",
-                                      ontap: () async {
-                                        if (value.userName !=
-                                                value.usernameController.text ||
-                                            value.email !=
-                                                value.emailController.text) {
-                                          settingsController
-                                              .updateUserData(context);
-                                        } else {
-                                          AppPopUps().showToast(
-                                              "Already up-to-date",
-                                              Colors.green);
-                                        }
-                                      },
-                                    );
-                            }),
                           ],
                         );
                 }),
